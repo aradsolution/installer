@@ -61,12 +61,12 @@ class InstallCommand extends Command
             foreach ($licence->packages as $package => $version) {
                 $composer->require->$package = $version;
             }
-            file_put_contents(realpath('composer.json'), json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            file_put_contents(base_path('composer.json'), json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
-            file_put_contents(realpath('') . '/system.lic', $licence->licence);
+            file_put_contents(base_path('system.lic'), $licence->licence);
 
             $this->info('Almost done. Please execute "composer update" command...');
-            chdir(realpath(''));
+            chdir(base_path());
         } else {
             $this->error('composer.json is not valid!');
             $this->error('Setup aborted!');
