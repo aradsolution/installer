@@ -50,7 +50,7 @@ class InstallCommand extends Command
             exit;
         }
 
-        $composer = json_decode(file_get_contents(realpath('composer.json')));
+        $composer = json_decode(file_get_contents(base_path('composer.json')));
         if (!empty($composer->repositories[0])) {
             $composer->repositories[0]->options = (object) ['http' => ['header' => ['Authorization: Bearer ' . $key]]];
             foreach ($composer->require as $package => $version) {
@@ -65,8 +65,7 @@ class InstallCommand extends Command
 
             file_put_contents(base_path('system.lic'), $licence->licence);
 
-            $this->info('Almost done. Please execute "composer update" command...');
-            chdir(base_path());
+            $this->info('Almost done. Please swith to the project folder and execute "composer update" command...');
         } else {
             $this->error('composer.json is not valid!');
             $this->error('Setup aborted!');
