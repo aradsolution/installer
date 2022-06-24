@@ -63,10 +63,10 @@ class InstallCommand extends Command
             }
             file_put_contents(realpath('composer.json'), json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
-            file_put_contents(realpath('system.lic'), $licence->licence);
+            file_put_contents(realpath('') . '/system.lic', $licence->licence);
 
             $this->info('Almost done. Please execute "composer update" command...');
-            chdir(realpath('/'));
+            chdir(realpath(''));
         } else {
             $this->error('composer.json is not valid!');
             $this->error('Setup aborted!');
