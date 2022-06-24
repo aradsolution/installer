@@ -28,7 +28,22 @@ class InstallCommand extends Command
     public function handle()
     {
         $key = $this->ask('Enter your lisence key');
-        $licence = json_decode(file_get_contents('https://api.aradsolution.com/get/licence?key=' . urlencode($key)));
+
+        $context = stream_context_create([
+            'http' => [
+                'method' => 'GET',
+                'header' => "Authorization: Bearer $key\r\n",
+            ]
+        ]);
+
+        $licence = @json_decode(
+            @file_get_contents(
+                'https://api.aradsolution.com/get/licence',
+                false,
+                $context
+            )
+        );
+
         if (!$licence || empty($licence->licence) || empty($licence->token) || empty($licence->packages)) {
             $this->error('The key is not valid or there is no relecant licence!');
             $this->error('Setup aborted!');
@@ -37,7 +52,7 @@ class InstallCommand extends Command
 
         $composer = json_decode(file_get_contents(realpath('composer.json')));
         if (!empty($composer->repositories[0])) {
-            $composer->repositories[0]->options = (object) ['http' => ['auth-token: ' . $licence->token]];
+            $composer->repositories[0]->options = (object) ['http' => ['header' => ['Authorization: Bearer ' . $key]]];
             foreach ($composer->require as $package => $version) {
                 if (substr($package, 0, 13) == 'aradsolution/') {
                     unset($composer->require->$package);
@@ -47,8 +62,11 @@ class InstallCommand extends Command
                 $composer->require->$package = $version;
             }
             file_put_contents(realpath('composer.json'), json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+            file_put_contents(realpath('system.lic'), $licence->licence);
+
             $this->info('Almost done. Please execute "composer update" command...');
-            chdir(realpath());
+            chdir(realpath('/'));
         } else {
             $this->error('composer.json is not valid!');
             $this->error('Setup aborted!');
