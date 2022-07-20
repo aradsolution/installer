@@ -27,7 +27,17 @@ class InstallCommand extends Command
      */
     public function handle()
     {
-        $key = $this->ask('Enter your lisence key');
+        $token = null;
+
+        if (function_exists('get_licence_token')) {
+            $token = get_licence_token();
+        }
+
+        do {
+            $key = $this->ask('Enter your lisence key', $token ? 'Leave blank to use existing key' : null);
+            $key = $key == 'Leave blank to use existing key' ? $token : $key;
+        } while(!$key);
+
 
         $context = stream_context_create([
             'http' => [
