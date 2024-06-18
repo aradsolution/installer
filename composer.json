@@ -44,7 +44,7 @@
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=public --ansi --force",
             "@php artisan vendor:publish --tag=arad-assets --ansi --force",
-            "@php artisan migrate --graceful --ansi",
+            "@php artisan migrate --graceful --ansi --force",
             "sh install.sh"
         ],
         "post-root-package-install": [
